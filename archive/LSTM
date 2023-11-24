@@ -31,7 +31,7 @@ time_step = X_train.shape[1]
 model = Sequential()
 model.add(LSTM(units=50, return_sequences=True, input_shape=(time_step, X_train.shape[2])))
 model.add(Dropout(0.2))
-model.add(LSTM(units=50, return_sequences=False)) # Set return_sequences to False here
+model.add(LSTM(units=50, return_sequences=False)) 
 model.add(Dropout(0.2))
 model.add(Dense(units=1))
 model.compile(optimizer='adam', loss='mean_squared_error')
@@ -65,3 +65,5 @@ plt.figure(figsize=(10, 6))
 plt.plot(future_prices, label='Predicted Future Prices')
 plt.legend()
 plt.show()
+
+

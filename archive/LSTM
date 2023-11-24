@@ -105,7 +105,7 @@ def predict_future_prices(model, last_days_scaled, time_step, days_to_predict):
 # Predict future prices for the next 'n' days
 days_to_predict = 365  # For example, predict for the next year
 future_prices = predict_future_prices(model, last_days_scaled, time_step, days_to_predict)
-print("Future Prices for the next year:", future_prices)
+print("Future Prices for the each day in next year:", future_prices)
 
 # Optionally, plot these predictions
 import matplotlib.pyplot as plt

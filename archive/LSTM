@@ -1,4 +1,3 @@
-code for LSTM
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler
 import numpy as np
@@ -66,8 +65,51 @@ model.compile(optimizer='adam', loss='mean_squared_error')
 model.summary()
 history = model.fit(X_train, y_train, epochs=100, batch_size=32, validation_data=(X_test, y_test), verbose=1)
 
-# Plotting
+
+# Function to predict next day's closing price using the model
+def predict_next_day(model, last_days_scaled, time_step):
+    # Reshape to the format [samples, time steps, features]
+    last_days_scaled = last_days_scaled.reshape((1, time_step, 1))
+    # Predict the next day's closing price
+    predicted_price_scaled = model.predict(last_days_scaled)
+    # Reverse the scaling to get the actual price
+    predicted_price = scaler.inverse_transform(predicted_price_scaled)
+    return predicted_price[0, 0]
+
+
+# Predict the next day's closing price
+last_days_scaled = scaled_data[-time_step:]  # Get the last 'time_step' days
+next_day_price = predict_next_day(model, last_days_scaled, time_step)
+print("Predicted next day's closing price:", next_day_price)
+
+
+# Function to predict future prices iteratively
+def predict_future_prices(model, last_days_scaled, time_step, days_to_predict):
+    future_prices = []
+    current_input = last_days_scaled.copy()
+
+    for _ in range(days_to_predict):
+        # Predict the next day's price
+        next_day_price_scaled = model.predict(current_input.reshape((1, time_step, 1)))
+        next_day_price = scaler.inverse_transform(next_day_price_scaled)[0, 0]
+
+        # Append the prediction
+        future_prices.append(next_day_price)
+
+        # Update the input for next prediction
+        current_input = np.append(current_input[1:], next_day_price_scaled)
+
+    return future_prices
+
+
+# Predict future prices for the next 'n' days
+days_to_predict = 365  # For example, predict for the next year
+future_prices = predict_future_prices(model, last_days_scaled, time_step, days_to_predict)
+print("Future Prices for the next year:", future_prices)
+
+# Optionally, plot these predictions
 import matplotlib.pyplot as plt
-plt.plot(history.history['loss'], label='Train Loss')
-plt.plot(history.history['val_loss'], label='Test Loss')
+plt.figure(figsize=(10, 6))
+plt.plot(future_prices, label='Predicted Future Prices')
 plt.legend()
+plt.show()
